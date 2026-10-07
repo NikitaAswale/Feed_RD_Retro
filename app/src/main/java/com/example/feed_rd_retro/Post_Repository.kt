@@ -1,15 +1,24 @@
 package com.example.feed_rd_retro
 
-class Post_Repository  {
+import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
+import kotlin.collections.emptyList
 
-    private val apiservice = RetrofitInstance.api
+class Post_Repository @Inject constructor (
+    private val apiService: APIService,
+    private val postDao: postDAO
+) {
 
-    suspend fun getposts(): List<posts>{
-        return try {
-            apiservice.getPosts()
+    fun getPosts(): Flow<List<PostDTO>> = postDao.getAllPosts()
+
+    suspend fun refreshUsers(){
+        try {
+            val posts = apiService.getPosts()
+            postDao.clearAll()
+            postDao.insertAll(posts.map {it.toEntity()})
         }catch (e: Exception){
             e.printStackTrace()
-            emptyList()
+
         }
 
     }

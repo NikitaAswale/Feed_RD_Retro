@@ -226,7 +226,7 @@ fun Row_Items(prompt : String){
 }
 
 @Composable
-fun Card_View(posts: posts) {
+fun Card_View(posts: PostDTO) {
 
     Card(modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(4.dp),

@@ -3,25 +3,39 @@ package com.example.feed_rd_retro
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.room.Insert
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class post_viewmodel : ViewModel() {
+@HiltViewModel
+class post_viewmodel @Inject constructor(
+    private val repository: Post_Repository
+): ViewModel() {
 
-    private val repository = Post_Repository()
+    private val _posts = MutableStateFlow<List<PostDTO>>(emptyList())
 
-    private val _posts = MutableStateFlow<List<posts>>(emptyList())
-
-    val posts : StateFlow<List<posts>> = _posts
+    val posts : StateFlow<List<PostDTO>> = _posts
 
     init {
-        fetchposts()
+        observePosts()
+        refresh()
     }
 
-    fun fetchposts(){
+    private fun observePosts() {
         viewModelScope.launch {
-            _posts.value = repository.getposts()
+            repository.getPosts().collect { posts ->
+                _posts.value = posts
+            }
+        }
+    }
+
+    fun refresh() {
+        viewModelScope.launch {
+            repository.refreshUsers()
         }
     }
 }

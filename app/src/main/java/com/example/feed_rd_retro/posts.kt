@@ -5,4 +5,14 @@ data class posts(
     val id : Int,
     val title : String,
     val body : String
-)
+) {
+
+    fun toEntity() = PostDTO(
+        userId = userId,
+        id = id,
+        title = title,
+        body = body
+    )
+}
+
+
